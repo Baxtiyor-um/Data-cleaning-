@@ -1,0 +1,70 @@
+import numpy as np
+import pandas as pd
+
+# 1. Avtomobillar haqida boshlang'ich (muammoli) ma'lumotlar to'plamini yaratamiz
+car_data = {
+    "Brand": [
+        "Chevrolet",
+        "chevrolet",
+        "Hyundai",
+        "Kia",
+        "BYD",
+        "Kia",
+        "Toyota",
+    ],  # Har xil registr va dublikat bor
+    "Model": ["Gentra", "Gentra", "Elantra", "K5", "Song Plus", "K5", "Camry"],
+    "Year": [2022, 2022, 2021, np.nan, 2023, np.nan, 2020],  # Bo'sh yillar bor
+    "Price": [
+        13000,
+        13000,
+        np.nan,
+        22000,
+        28000,
+        22000,
+        32000,
+    ],  # Bo'sh narx bor
+    "Color": [
+        "Oq",
+        "Oq",
+        "Qora",
+        "Ko'k",
+        "Kulrang",
+        "Ko'k",
+        "Oq",
+    ],  # Keyinchalik olib tashlanadigan ustun
+}
+
+df_cars = pd.DataFrame(car_data)
+
+print("Dastlabki tahrirlanmagan ma'lumotlar:")
+print(df_cars)
+print("-" * 50)
+
+# 2. Ma'lumotlarni tozalash va tahrirlash (Data Cleaning & Preparation)
+
+# Qadam 1: Matnlarni standartlashtirish (Katta-kichik harflar muammosini yechish)
+# 'chevrolet' va 'Chevrolet' bitta marka deb hisoblanishi uchun hammasini bosh harf bilan yozamiz
+df_cars["Brand"] = df_cars["Brand"].str.capitalize()
+
+# Qadam 2: Bo'sh (NaN) qiymatlarni aniqlash va to'ldirish
+print("Bo'sh qiymatlar soni:")
+print(df_cars.isnull().sum())
+print("-" * 50)
+
+# 'Year' (Yil) ustunidagi bo'sh joyni o'rtacha yil bilan to'ldiramiz (butun son ko'rinishida)
+mean_year = int(df_cars["Year"].mean())
+df_cars["Year"] = df_cars["Year"].fillna(mean_year)
+
+# 'Price' (Narx) ustunidagi bo'sh joyni median (o'rta) narx bilan to'ldiramiz
+median_price = df_cars["Price"].median()
+df_cars["Price"] = df_cars["Price"].fillna(median_price)
+
+# Qadam 3: Takroriy qatorlarni (Dublikatlarni) olib tashlash
+# 1-indeksdagi 'chevrolet Gentra' va 5-indeksdagi 'Kia K5' takrorlangan edi
+df_cars = df_cars.drop_duplicates()
+
+# Qadam 4: Kerakli atributlarni ajratib olish (Color ustunini tashlab yuboramiz)
+df_cars = df_cars[["Brand", "Model", "Year", "Price"]]
+
+print("Tahrirlangan va tozalangan yakuniy ma'lumotlar:")
+print(df_cars)
